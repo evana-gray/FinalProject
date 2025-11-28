@@ -6,6 +6,7 @@ editor: visual
 
 ```{r}
 library(tidyverse)
+library(psych)
 ```
 
 #Read Data
@@ -20,23 +21,40 @@ colnames(diabetes) <- tolower(colnames(diabetes))
 ```{r}
 diabetes <- diabetes |>
   mutate(
-    diabetes_binary_f = factor(diabetes_binary, c("no diabetes", "diabetes")), 
-    highbp_f = factor(highbp, c("no high BP", "high BP")),
-    highchol_f = factor(highchol, c("no high cholesterol", "high cholesterol")),
-    cholcheck_f = factor(cholcheck, c("no cholesterol check in 5 years", "yes cholesterol check in 5 years")),
-    smoker_f = factor(smoker, c("no", "yes")), 
-    stroke_f = factor(stroke, c("no", "yes")),
-    heartdiseaseorattack_f = factor(heartdiseaseorattack, c("no", "yes")),
-    physactivity_f = factor(physactivity, c("no", "yes")),
-    fruits_f = factor(fruits, c("no","yes")),
-    veggies_f = factor(veggies, c("no", "yes")),
-    hvyalcoholconsump_f = factor(hvyalcoholconsump, c("no", "yes")),
-    anyhealthcare_f = factor(anyhealthcare, c("no", "yes")),
-    nodocbccost_f = factor(nodocbccost, c("no","yes")),
-    genhlth_f = factor(genhlth, c("excellent", "very good", "good", "fair", "poor")),
-    diffwalk_f  = factor(diffwalk, c("no", "yes")),
-    sex_f = factor(sex, c("female", "male")),
-    age_f = factor(age, c("18 to 24",
+    diabetes_binary_f = factor(diabetes_binary, levels = c(0,1),
+                               labels = c("no diabetes", "diabetes")), 
+    highbp_f = factor(highbp, levels = c(0,1),
+                               labels = c("no high BP", "high BP")),
+    highchol_f = factor(highchol, levels = c(0,1),
+                               labels = c("no high cholesterol", "high cholesterol")),
+    cholcheck_f = factor(cholcheck, levels = c(0,1),
+                               labels = c("no cholesterol check in 5 years", "yes cholesterol check in 5 years")),
+    smoker_f = factor(smoker, levels = c(0,1),
+                               labels = c("no", "yes")), 
+    stroke_f = factor(stroke, levels = c(0,1),
+                               labels = c("no", "yes")),
+    heartdiseaseorattack_f = factor(heartdiseaseorattack, levels = c(0,1),
+                               labels = c("no", "yes")),
+    physactivity_f = factor(physactivity, levels = c(0,1),
+                               labels = c("no", "yes")),
+    fruits_f = factor(fruits, levels = c(0,1),
+                               labels = c("no","yes")),
+    veggies_f = factor(veggies, levels = c(0,1),
+                               labels = c("no", "yes")),
+    hvyalcoholconsump_f = factor(hvyalcoholconsump, levels = c(0,1),
+                               labels = c("no", "yes")),
+    anyhealthcare_f = factor(anyhealthcare, levels = c(0,1),
+                               labels = c("no", "yes")),
+    nodocbccost_f = factor(nodocbccost, levels = c(0,1),
+                               labels = c("no","yes")),
+    genhlth_f = factor(genhlth, levels = 1:5,
+                               labels = c("excellent", "very good", "good", "fair", "poor")),
+    diffwalk_f  = factor(diffwalk, levels = c(0,1),
+                               labels = c("no", "yes")),
+    sex_f = factor(sex, levels = c(0,1),
+                               labels = c("female", "male")),
+    age_f = factor(age, levels = 1:13,
+                        labels = c("18 to 24",
                           "25 to 29", 
                           "30 to 34", 
                           "35 to 39",
@@ -50,14 +68,16 @@ diabetes <- diabetes |>
                           "75 to 79", 
                           "80 to high"
                    )),
-    education_f = factor(education, c("Never attended school or only kindergarten",
+    education_f = factor(education, levels = 1:6,
+                         labels = c("Never attended school or only kindergarten",
                          "Grades 1 through 8 (Elementary)",
                          "Grades 9 through 11 (Some high school)",
                          "Grade 12 or GED (High school graduate)",
                          "College 1 year to 3 years (Some college or technical school)",
                          "College 4 years or more (College graduate)")
                          ),
-    income_f = factor(income, c("< 10k",
+    income_f = factor(income, levels = 1:8,
+                      labels = c("< 10k",
                                 "< 15k",
                                 "< 20k",
                                 "< 25k",
@@ -66,5 +86,26 @@ diabetes <- diabetes |>
                                 "< 75k",
                                 "75k+"))
   )
+```
+
+# EDA
+
+## Missing Values
+
+There are no missing values for any variable including new factor variables.
+
+```{r}
+
+# write function to count NAs in a column
+sum_na <- function(column) {
+  sum(is.na(column))
+}
+
+# operate function across all dataset columns
+
+na_counts <- diabetes |>
+  summarize(across(everything(), sum_na))
+na_counts
+
 ```
 
