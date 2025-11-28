@@ -11,6 +11,6 @@ library(tidyverse)
 #Read Data
 
 ```{r}
-diabetes <- read_csv("")
+diabetes <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
 ```
 
