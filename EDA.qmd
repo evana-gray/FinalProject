@@ -91,6 +91,7 @@ diabetes <- diabetes |>
 
 # EDA
 
+
 ## Missing Values
 
 There are no missing values for any variable including new factor variables.
@@ -136,5 +137,24 @@ ggplot(diabetes, aes(x = age_f , fill = income_f)) +
     legend.position = "top", legend.box = "horizontal") +
   scale_fill_discrete(guide = guide_legend(nrow=1))
 
+```
+
+```{r}
+
+# diabetes prevalence tables
+diabetes |>
+  group_by(sex_f) |>
+  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  arrange(desc(PrevalencePer1000))
+
+diabetes |>
+  group_by(income_f) |>
+  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  arrange(desc(PrevalencePer1000))
+
+diabetes |>
+  group_by(age_f) |>
+  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  arrange(desc(PrevalencePer1000))
 ```
 
