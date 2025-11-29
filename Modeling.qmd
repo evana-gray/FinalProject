@@ -15,6 +15,7 @@ library(rpart)
 library(rpart.plot)
 library(baguette)
 library(ranger)
+library(yardstick)
 ```
 
 #Read Data
@@ -100,7 +101,7 @@ diabetes <- diabetes |>
 
 ```{r}
 diabetes_model_data <- diabetes |>
-  select(diabetes_binary, highbp_f, sex_f, income_f, age_f, menthlth)
+  select(diabetes_binary_f, highbp_f, sex_f, income_f, age_f, menthlth)
 rm(diabetes) #remove large original file
 ```
 
@@ -118,14 +119,44 @@ diabetes_cv_folds <- vfold_cv(diabetes_train, 5)
 
 # Recipe
 ```{r}
-reci_1 <- recipe(diabetes_binary~ ., data = diabetes_train) |>
-  step_normalize(all_numeric(), -diabetes_binary)
+reci_1 <- recipe(diabetes_binary_f~ ., data = diabetes_train) |>
+  step_normalize(all_numeric(), -diabetes_binary_f)
 
 ```
 
-# Classification Tree Model
+# Classification Tree Model and Workflow
 ```{r}
-class_tree <- decision_tree()
+# Define model
+class_tree_mod <- decision_tree(tree_depth = tune(),
+                                min_n = 20,
+                                cost_complexity = tune()) |>
+  set_engine("rpart") |>
+  set_mode("classification")
+
+#set up workflow
+class_tree_flow <- workflow() |>
+  add_recipe(reci_1) |>
+  add_model(class_tree_mod)
+
+
+fit1_grid <- grid_regular(cost_complexity(),
+                           tree_depth(),
+                           levels = 5)
+                          
+
+#fit tree to CV fold
+fit1 <- class_tree_flow |>
+  tune_grid(resamples = diabetes_cv_folds,
+            grid = fit1_grid,
+            metrics = metric_set(mn_log_loss))
+
+#review model parameters
+fits1_parameters <- fit1 |>
+  collect_metrics() |>
+  filter(.metric == "mn_log_loss") |>
+  arrange(mean)
+
+fits1_parameters
 
 ```
 
