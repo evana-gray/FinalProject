@@ -7,6 +7,7 @@ editor: visual
 ```{r}
 library(tidyverse)
 library(psych)
+library(ggplot2)
 ```
 
 #Read Data
@@ -106,6 +107,34 @@ sum_na <- function(column) {
 na_counts <- diabetes |>
   summarize(across(everything(), sum_na))
 na_counts
+```
+
+
+```{r}
+#diabetes status by income 
+diabetes |>
+  group_by(income_f, diabetes_binary_f) |>
+  summarize(count = n()) |>
+  pivot_wider(names_from = diabetes_binary_f, values_from = count)
+```
+
+
+
+```{r}
+#diabetes status by income 
+diabetes |>
+  group_by(age_f, income_f) |>
+  summarize(count = n()) |>
+  pivot_wider(names_from = income_f, values_from = count)
+
+#distribution of age by income
+#evident higher income is more common between middle-age
+ggplot(diabetes, aes(x = age_f , fill = income_f)) + 
+  geom_bar() +
+  labs(title = "Distribution of Age and Income", x = "Age Category", y = "Observations") +
+  theme(plot.title = element_text(hjust = 0.5),
+    legend.position = "top", legend.box = "horizontal") +
+  scale_fill_discrete(guide = guide_legend(nrow=1))
 
 ```
 
