@@ -148,7 +148,8 @@ fit1_grid <- grid_regular(cost_complexity(),
 fit1 <- class_tree_flow |>
   tune_grid(resamples = diabetes_cv_folds,
             grid = fit1_grid,
-            metrics = metric_set(mn_log_loss))
+            metrics = metric_set(mn_log_loss)
+            )
 
 #review model parameters
 fits1_parameters <- fit1 |>
@@ -158,5 +159,10 @@ fits1_parameters <- fit1 |>
 
 fits1_parameters
 
+#select best fit
+class_lowest_log <- select_best(fit1)
+class_lowest_log
+
 ```
+
 

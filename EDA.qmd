@@ -132,7 +132,7 @@ diabetes |>
 #evident higher income is more common between middle-age
 ggplot(diabetes, aes(x = age_f , fill = income_f)) + 
   geom_bar() +
-  labs(title = "Distribution of Age and Income", x = "Age Category", y = "Observations") +
+  labs(title = "Frequency Distribution of Age and Income", x = "Age Category", y = "Observations") +
   theme(plot.title = element_text(hjust = 0.5),
     legend.position = "top", legend.box = "horizontal") +
   scale_fill_discrete(guide = guide_legend(nrow=1))
@@ -187,5 +187,7 @@ diabetes |>
   summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
   arrange(desc(PrevalencePer1000)) |>
   pivot_wider(names_from = smoker_f, values_from = PrevalencePer1000)
+
+
 ```
 
