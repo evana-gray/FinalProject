@@ -153,8 +153,39 @@ diabetes |>
   arrange(desc(PrevalencePer1000))
 
 diabetes |>
+  group_by(hvyalcoholconsump_f) |>
+  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  arrange(desc(PrevalencePer1000))
+
+#view proportion of heavy drinkers by income level and sex
+alc_inc_df <- diabetes |>
+  group_by(income_f, sex_f) |>
+  summarize(PrevalencePer1000 = (sum(hvyalcoholconsump == 1)/n()*1000))
+
+ggplot(alc_inc_df, aes(x = income_f , y = PrevalencePer1000, fill = sex_f)) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Heavy Drinking Rate by Income and Sex", x = "Income Level", y = "Incidence of Heavy Drinking (per 1000)") +
+  theme(plot.title = element_text(hjust = 0.5), legend.position = "top", legend.box = "horizontal") +
+  scale_fill_discrete(guide = guide_legend(nrow=1))
+
+
+diabetes |>
   group_by(age_f) |>
   summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
   arrange(desc(PrevalencePer1000))
+
+# two way contingency table of prevalence by high blood pressure and high cholesterol
+diabetes |>
+  group_by(highbp_f, highchol_f) |>
+  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  arrange(desc(PrevalencePer1000)) |>
+  pivot_wider(names_from = highchol_f, values_from = PrevalencePer1000)
+
+# two way contingency table of prevalence across mental health and physical health levels
+diabetes |>
+  group_by(smoker_f, hvyalcoholconsump_f) |>
+  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  arrange(desc(PrevalencePer1000)) |>
+  pivot_wider(names_from = smoker_f, values_from = PrevalencePer1000)
 ```
 
