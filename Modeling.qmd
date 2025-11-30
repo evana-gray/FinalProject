@@ -214,6 +214,37 @@ rf_lowest_log
 
 ```
 
+#Test Models on Full Split Dataset
+
+```{r}
+#Classification Tree
+class_tree_flow2 <- class_tree_flow |>
+  finalize_workflow(class_lowest_log)
+
+class_final_fit <- class_tree_flow2 |>
+  last_fit(diabetes_split)
+
+class_final_parameters <- class_final_fit |>
+  collect_metrics()
+
+collect_metrics(class_final_fit)
+
+#Random Forest
+rf_flow2 <- rf_flow |> 
+  finalize_workflow(rf_lowest_log)
+
+rf_final_fit <- rf_flow2 |>
+  last_fit(diabetes_split)
+
+rf_final_parameters <- rf_final_fit |>
+  collect_metrics()
+
+rf_final_parameters
+
+```
+
+
+
 ```{r}
 #reset plan to default
 plan(sequential)
