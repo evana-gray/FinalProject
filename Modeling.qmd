@@ -16,6 +16,11 @@ library(rpart.plot)
 library(baguette)
 library(ranger)
 library(yardstick)
+library(future)
+
+set.seed(16)
+
+plan(multisession, workers = 10)
 ```
 
 #Read Data
@@ -120,7 +125,15 @@ diabetes_cv_folds <- vfold_cv(diabetes_train, 5)
 # Recipe
 ```{r}
 reci_1 <- recipe(diabetes_binary_f~ ., data = diabetes_train) |>
-  step_normalize(all_numeric(), -diabetes_binary_f)
+  step_normalize(all_numeric(), -diabetes_binary_f) |>
+  update_role(diabetes_binary_f, new_role = "outcome") |>
+  step_dummy(highbp_f, sex_f, income_f, age_f)
+
+
+reci_1 |>
+  prep(diabetes_train) |>
+  bake(diabetes_train) |>
+  colnames() 
 
 ```
 
@@ -163,6 +176,46 @@ fits1_parameters
 class_lowest_log <- select_best(fit1)
 class_lowest_log
 
+
+
 ```
 
+# Random Forest
+```{r}
+
+#define RF model
+rf_diabetes <- rand_forest(mtry = tune(), trees = 100) |>
+  set_engine("ranger") |>
+  set_mode("classification")
+
+#set up workflow
+rf_flow <- workflow() |>
+  add_recipe(reci_1) |>
+  add_model(rf_diabetes)
+
+
+#fit RF to CV folds
+
+rf_fit <- rf_flow |>
+  tune_grid(resamples = diabetes_cv_folds,
+            metrics = metric_set(mn_log_loss)
+            )
+
+# find best parameters
+rf_fits_parameters <- rf_fit |>
+  collect_metrics() |>
+  filter(.metric == "mn_log_loss") |>
+  arrange(mean)
+
+rf_fits_parameters
+
+rf_lowest_log <- select_best(rf_fit)
+rf_lowest_log
+
+```
+
+```{r}
+#reset plan to default
+plan(sequential)
+```
 
