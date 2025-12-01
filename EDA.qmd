@@ -8,7 +8,9 @@ editor: visual
 library(tidyverse)
 library(psych)
 library(ggplot2)
+library(future)
 
+plan(multisession, workers = 14)
 ```
 
 This project's data was sourced from the CDC's 2015 Behavioral Risk Factor Surveillance System (BRFSS) and was accessed from www.kaggle.com.
@@ -212,3 +214,28 @@ diabetes |>
             PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
   mutate("Col%" = round((count/253680)*100,2))
 ```
+
+
+### BMI
+
+```{r}
+psych::describe(diabetes$bmi)
+
+#ggplot showing BMI is much more consistently populated throughout the dataset
+ggplot(diabetes, aes(x = bmi)) +
+  geom_density() 
+
+#prevalence per 1000 is more than double for those with BMI above the Median
+diabetes |>
+  mutate(BMI_flag = if_else(bmi > 27, "Above Median BMI", "Below Median BMI")) |>
+  group_by(BMI_flag) |>
+  summarize(count = n(),
+            PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  mutate("Col%" = round((count/253680)*100,2))
+```
+
+
+```{r}
+plan(sequential)
+```
+

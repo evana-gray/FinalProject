@@ -106,7 +106,7 @@ diabetes <- diabetes |>
 
 ```{r}
 diabetes_model_data <- diabetes |>
-  select(diabetes_binary_f, highbp_f, sex_f, income_f, age_f, menthlth)
+  select(diabetes_binary_f, highbp_f, sex_f, income_f, age_f, bmi)
 rm(diabetes) #remove large original file
 ```
 
@@ -153,8 +153,8 @@ class_tree_flow <- workflow() |>
 
 
 fit1_grid <- grid_regular(cost_complexity(),
-                           tree_depth(),
-                           levels = 5)
+                           tree_depth())
+                          # ,levels = 5)
                           
 
 #fit tree to CV fold
@@ -242,9 +242,29 @@ collect_metrics(rf_final_fit)
 
 ```
 
+
 #Overall Best Model
 
 The overall best model, with the lowest mn_log_loss is the random forest
+
+## Confusion Matrix
+```{r}
+
+rf_lastfit <- extract_workflow(rf_final_fit)
+
+conf_mat(
+  diabetes_model_data |>
+    mutate(
+      estimate = rf_lastfit |>
+        predict(diabetes_model_data) |>
+        pull()),
+  diabetes_binary_f,
+  estimate
+    )
+
+
+```
+
 
 ```{r}
 #reset plan to default
