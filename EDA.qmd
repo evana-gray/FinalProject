@@ -8,9 +8,13 @@ editor: visual
 library(tidyverse)
 library(psych)
 library(ggplot2)
+
 ```
 
-#Read Data
+This project's data was sourced from the CDC's 2015 Behavioral Risk Factor Surveillance System (BRFSS) and was accessed from www.kaggle.com.
+
+# Read Data
+
 ```{r}
 diabetes <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
 
@@ -18,7 +22,8 @@ diabetes <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
 colnames(diabetes) <- tolower(colnames(diabetes))
 ```
 
-#Create Factors
+# Create Factors
+
 ```{r}
 diabetes <- diabetes |>
   mutate(
@@ -91,7 +96,6 @@ diabetes <- diabetes |>
 
 # EDA
 
-
 ## Missing Values
 
 There are no missing values for any variable including new factor variables.
@@ -110,23 +114,20 @@ na_counts <- diabetes |>
 na_counts
 ```
 
-
+## Variables of interest
+### Age and Income
 ```{r}
+#diabetes status by age and income 
+diabetes |>
+  group_by(age_f, income_f) |>
+  summarize(count = n()) |>
+  pivot_wider(names_from = income_f, values_from = count)
+
 #diabetes status by income 
 diabetes |>
   group_by(income_f, diabetes_binary_f) |>
   summarize(count = n()) |>
   pivot_wider(names_from = diabetes_binary_f, values_from = count)
-```
-
-
-
-```{r}
-#diabetes status by income 
-diabetes |>
-  group_by(age_f, income_f) |>
-  summarize(count = n()) |>
-  pivot_wider(names_from = income_f, values_from = count)
 
 #distribution of age by income
 #evident higher income is more common between middle-age
@@ -138,6 +139,8 @@ ggplot(diabetes, aes(x = age_f , fill = income_f)) +
   scale_fill_discrete(guide = guide_legend(nrow=1))
 
 ```
+
+### Diabetes prevalence 
 
 ```{r}
 
@@ -191,3 +194,21 @@ diabetes |>
 
 ```
 
+### Mental Health
+
+```{r}
+#general numeric summary of the mental health numeric variable - range is 0-30 with many zero responses
+psych::describe(diabetes$menthlth)
+
+ggplot(diabetes, aes(x = menthlth)) +
+  geom_density()
+
+#create mental health binary and see percentage with a non-zero response
+#diabetes is more prevalent 
+diabetes |>
+  mutate(mentalhealth_flag = if_else(menthlth == 0, "none", "1+")) |>
+  group_by(mentalhealth_flag) |>
+  summarize(count = n(),
+            PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  mutate("Col%" = round((count/253680)*100,2))
+```
