@@ -149,23 +149,23 @@ ggplot(diabetes, aes(x = age_f , fill = income_f)) +
 # diabetes prevalence tables
 diabetes |>
   group_by(sex_f) |>
-  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n())*1000) |>
   arrange(desc(PrevalencePer1000))
 
 diabetes |>
   group_by(income_f) |>
-  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n())*1000) |>
   arrange(desc(PrevalencePer1000))
 
 diabetes |>
   group_by(hvyalcoholconsump_f) |>
-  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n())*1000) |>
   arrange(desc(PrevalencePer1000))
 
 #view proportion of heavy drinkers by income level and sex
 alc_inc_df <- diabetes |>
   group_by(income_f, sex_f) |>
-  summarize(PrevalencePer1000 = (sum(hvyalcoholconsump == 1)/n()*1000))
+  summarize(PrevalencePer1000 = (sum(hvyalcoholconsump == 1)/n())*1000)
 
 ggplot(alc_inc_df, aes(x = income_f , y = PrevalencePer1000, fill = sex_f)) + 
   geom_bar(stat = "identity") +
@@ -176,20 +176,20 @@ ggplot(alc_inc_df, aes(x = income_f , y = PrevalencePer1000, fill = sex_f)) +
 
 diabetes |>
   group_by(age_f) |>
-  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n())*1000) |>
   arrange(desc(PrevalencePer1000))
 
 # two way contingency table of prevalence by high blood pressure and high cholesterol
 diabetes |>
   group_by(highbp_f, highchol_f) |>
-  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n())*1000) |>
   arrange(desc(PrevalencePer1000)) |>
   pivot_wider(names_from = highchol_f, values_from = PrevalencePer1000)
 
 # two way contingency table of prevalence across mental health and physical health levels
 diabetes |>
   group_by(smoker_f, hvyalcoholconsump_f) |>
-  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+  summarize(PrevalencePer1000 = (sum(diabetes_binary == 1)/n())*1000) |>
   arrange(desc(PrevalencePer1000)) |>
   pivot_wider(names_from = smoker_f, values_from = PrevalencePer1000)
 
@@ -211,7 +211,7 @@ diabetes |>
   mutate(mentalhealth_flag = if_else(menthlth == 0, "none", "1+")) |>
   group_by(mentalhealth_flag) |>
   summarize(count = n(),
-            PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+            PrevalencePer1000 = (sum(diabetes_binary == 1)/n())*1000) |>
   mutate("Col%" = round((count/253680)*100,2))
 ```
 
@@ -230,7 +230,7 @@ diabetes |>
   mutate(BMI_flag = if_else(bmi > 27, "Above Median BMI", "Below Median BMI")) |>
   group_by(BMI_flag) |>
   summarize(count = n(),
-            PrevalencePer1000 = (sum(diabetes_binary == 1)/n()*1000)) |>
+            PrevalencePer1000 = (sum(diabetes_binary == 1)/n())*1000) |>
   mutate("Col%" = round((count/253680)*100,2))
 ```
 
