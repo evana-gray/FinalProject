@@ -20,7 +20,7 @@ library(future)
 
 set.seed(16)
 
-plan(multisession, workers = 10)
+plan(multisession, workers = 14)
 ```
 
 #Read Data
@@ -222,28 +222,29 @@ class_tree_flow2 <- class_tree_flow |>
   finalize_workflow(class_lowest_log)
 
 class_final_fit <- class_tree_flow2 |>
-  last_fit(diabetes_split)
+  last_fit(diabetes_split, metrics = metric_set(accuracy, mn_log_loss))
 
 class_final_parameters <- class_final_fit |>
   collect_metrics()
 
 collect_metrics(class_final_fit)
 
+
 #Random Forest
 rf_flow2 <- rf_flow |> 
   finalize_workflow(rf_lowest_log)
 
 rf_final_fit <- rf_flow2 |>
-  last_fit(diabetes_split)
+  last_fit(diabetes_split, metrics = metric_set(accuracy, mn_log_loss))
 
-rf_final_parameters <- rf_final_fit |>
-  collect_metrics()
+collect_metrics(rf_final_fit)
 
-rf_final_parameters
 
 ```
 
+#Overall Best Model
 
+The overall best model, with the lowest mn_log_loss is the random forest
 
 ```{r}
 #reset plan to default
