@@ -116,6 +116,37 @@ na_counts <- diabetes |>
 na_counts
 ```
 
+
+```{r}
+
+#summary of model variables
+#diabetes_binary_f, highbp_f, sex_f, income_f, age_f, bmi
+ diabetes |>
+  group_by(highbp_f) |>
+  summarize(count = n()) |>
+  arrange(desc(count)) 
+
+ diabetes |>
+  group_by(sex_f) |>
+  summarize(count = n()) |>
+  arrange(desc(count)) 
+ 
+  diabetes |>
+  group_by(income_f) |>
+  summarize(count = n()) |>
+  arrange(desc(count)) 
+  
+  diabetes |>
+  group_by(age_f) |>
+  summarize(count = n())  |>
+  arrange(desc(count)) 
+  
+  mean(diabetes$bmi)
+
+```
+
+
+
 ## Variables of interest
 ### Age and Income
 ```{r}

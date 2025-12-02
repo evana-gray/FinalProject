@@ -340,7 +340,7 @@ The overall best model, with the lowest mn_log_loss is the random forest
 
 rf_lastfit <- extract_workflow(rf3_final_fit)
 
-conf_mat(
+matrix <- conf_mat(
   diabetes_model_data |>
     mutate(
       estimate = rf_lastfit |>
@@ -350,6 +350,7 @@ conf_mat(
   estimate
     )
 
+autoplot(matrix)
 
 ```
 
@@ -358,4 +359,24 @@ conf_mat(
 #reset plan to default
 plan(sequential)
 ```
+
+
+```{r}
+
+#create tibble with same structure as original, but with avg / most common values
+#copy, empty and repopulate original tibble to ensure structure is the same
+diabetes_model_avg <- diabetes_model_data[0,] |> add_row(highbp_f = "no high BP", sex_f ="female", income_f = "75k+", age_f = "60 to 64", bmi = 28)
+
+predict(rf_lastfit, new_data = diabetes_model_avg)
+
+# highbp_f, sex_f, income_f, age_f, bmi
+fx_pred <- function(sex, age, bmi){
+  
+  
+  
+}
+
+
+```
+
 
