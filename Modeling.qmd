@@ -137,9 +137,10 @@ reci_1 |>
 
 ```
 
-# Classification Tree Model and Workflow
+# Classification Tree Models
+ Changes to tuning parameter made to fit#_grid step
 ```{r}
-# Define model
+# Define models
 class_tree_mod <- decision_tree(tree_depth = tune(),
                                 min_n = 20,
                                 cost_complexity = tune()) |>
@@ -151,16 +152,32 @@ class_tree_flow <- workflow() |>
   add_recipe(reci_1) |>
   add_model(class_tree_mod)
 
-
+#fit grids with multiple level parameters
 fit1_grid <- grid_regular(cost_complexity(),
-                           tree_depth())
-                          # ,levels = 5)
+                           tree_depth(), 
+                           levels = 2)
+fit2_grid <- grid_regular(cost_complexity(),
+                           tree_depth(), 
+                           levels = 3)
+fit3_grid <- grid_regular(cost_complexity(),
+                           tree_depth(), 
+                           levels = 5)
                           
 
-#fit tree to CV fold
+#fit trees to CV fold
 fit1 <- class_tree_flow |>
   tune_grid(resamples = diabetes_cv_folds,
             grid = fit1_grid,
+            metrics = metric_set(mn_log_loss)
+            )
+fit2 <- class_tree_flow |>
+  tune_grid(resamples = diabetes_cv_folds,
+            grid = fit2_grid,
+            metrics = metric_set(mn_log_loss)
+            )
+fit3 <- class_tree_flow |>
+  tune_grid(resamples = diabetes_cv_folds,
+            grid = fit3_grid,
             metrics = metric_set(mn_log_loss)
             )
 
@@ -170,74 +187,145 @@ fits1_parameters <- fit1 |>
   filter(.metric == "mn_log_loss") |>
   arrange(mean)
 
+fits2_parameters <- fit2 |>
+  collect_metrics() |>
+  filter(.metric == "mn_log_loss") |>
+  arrange(mean)
+
+fits3_parameters <- fit3 |>
+  collect_metrics() |>
+  filter(.metric == "mn_log_loss") |>
+  arrange(mean)
+
 fits1_parameters
+fits2_parameters
+fits3_parameters
+
+tree_results <- rbind(
+  show_best(fit1, metric = "mn_log_loss", n = 1), # best metric for levels = 2
+  show_best(fit2, metric = "mn_log_loss", n = 1), # best metric for levels = 3
+  show_best(fit3, metric = "mn_log_loss", n = 1) # best metric for levels = 5 -- this is the model with the lowest mean log loss
+)
+tree_results
 
 #select best fit
-class_lowest_log <- select_best(fit1)
+class_lowest_log <- select_best(fit3)
 class_lowest_log
-
-
 
 ```
 
-# Random Forest
+# Random Forest Models
 ```{r}
 
 #define RF model
-rf_diabetes <- rand_forest(mtry = tune(), trees = 100) |>
+rf1_diabetes <- rand_forest(mtry = 2, trees = 100) |>
   set_engine("ranger") |>
   set_mode("classification")
 
+rf2_diabetes <- rand_forest(mtry = 3, trees = 100) |>
+  set_engine("ranger") |>
+  set_mode("classification")
+
+rf3_diabetes <- rand_forest(mtry = 5, trees = 100) |>
+  set_engine("ranger") |>
+  set_mode("classification")
+
+rf4_diabetes <- rand_forest(mtry = tune(), trees = 100) |>
+  set_engine("ranger") |>
+  set_mode("classification")
+
+
 #set up workflow
-rf_flow <- workflow() |>
+rf1_flow <- workflow() |>
   add_recipe(reci_1) |>
-  add_model(rf_diabetes)
+  add_model(rf1_diabetes)
+
+rf2_flow <- workflow() |>
+  add_recipe(reci_1) |>
+  add_model(rf2_diabetes)
+
+rf3_flow <- workflow() |>
+  add_recipe(reci_1) |>
+  add_model(rf3_diabetes)
+
+rf4_flow <- workflow() |>
+  add_recipe(reci_1) |>
+  add_model(rf4_diabetes)
 
 
 #fit RF to CV folds
 
-rf_fit <- rf_flow |>
+rf1_fit <- rf1_flow |>
+  tune_grid(resamples = diabetes_cv_folds,
+            metrics = metric_set(mn_log_loss)
+            )
+
+rf2_fit <- rf2_flow |>
+  tune_grid(resamples = diabetes_cv_folds,
+            metrics = metric_set(mn_log_loss)
+            )
+
+rf3_fit <- rf3_flow |>
+  tune_grid(resamples = diabetes_cv_folds,
+            metrics = metric_set(mn_log_loss)
+            )
+rf4_fit <- rf4_flow |>
   tune_grid(resamples = diabetes_cv_folds,
             metrics = metric_set(mn_log_loss)
             )
 
 # find best parameters
-rf_fits_parameters <- rf_fit |>
+rf1_fits_parameters <- rf1_fit |>
   collect_metrics() |>
   filter(.metric == "mn_log_loss") |>
   arrange(mean)
 
-rf_fits_parameters
+rf2_fits_parameters <- rf2_fit |>
+  collect_metrics() |>
+  filter(.metric == "mn_log_loss") |>
+  arrange(mean)
 
-rf_lowest_log <- select_best(rf_fit)
-rf_lowest_log
+rf3_fits_parameters <- rf3_fit |>
+  collect_metrics() |>
+  filter(.metric == "mn_log_loss") |>
+  arrange(mean)
+
+rf4_fits_parameters <- rf4_fit |>
+  collect_metrics() |>
+  filter(.metric == "mn_log_loss") |>
+  arrange(mean)
+
+ rf1_fits_parameters # mtry= 2
+ rf2_fits_parameters # mtry = 3
+ rf3_fits_parameters # mtry = 5 -- this is the model with the lowest mean log loss
+ rf4_fits_parameters # mtry = tune() -- best model mtry = 6 does not out perform mtry = 5
+
+ rf3_lowest_log <- select_best(rf3_fit)
+ rf3_lowest_log
 
 ```
 
-#Test Models on Full Split Dataset
+#BEST Models on Full Split Dataset
 
 ```{r}
-#Classification Tree
+#Classification Tree - model 3 levels = 5
 class_tree_flow2 <- class_tree_flow |>
   finalize_workflow(class_lowest_log)
 
 class_final_fit <- class_tree_flow2 |>
   last_fit(diabetes_split, metrics = metric_set(accuracy, mn_log_loss))
 
-class_final_parameters <- class_final_fit |>
-  collect_metrics()
-
 collect_metrics(class_final_fit)
 
 
-#Random Forest
-rf_flow2 <- rf_flow |> 
-  finalize_workflow(rf_lowest_log)
+#Random Forest - model 3 mtry = 5
+rf3_flow2 <- rf3_flow |> 
+  finalize_workflow(rf3_lowest_log)
 
-rf_final_fit <- rf_flow2 |>
+rf3_final_fit <- rf3_flow2 |>
   last_fit(diabetes_split, metrics = metric_set(accuracy, mn_log_loss))
 
-collect_metrics(rf_final_fit)
+collect_metrics(rf3_final_fit)
 
 
 ```
@@ -250,7 +338,7 @@ The overall best model, with the lowest mn_log_loss is the random forest
 ## Confusion Matrix
 ```{r}
 
-rf_lastfit <- extract_workflow(rf_final_fit)
+rf_lastfit <- extract_workflow(rf3_final_fit)
 
 conf_mat(
   diabetes_model_data |>
