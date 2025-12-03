@@ -261,37 +261,21 @@ diabetes |>
   mutate("Col%" = round((count/253680)*100,2))
 ```
 
-# Model Variables
-
+Below is a visual demonstration of the difference in BMI distributions among those with diabetes and those without diabetes. It is clear BMI values do differ between those with and without diabetes in our dataset. 
 
 ```{r}
-
-#summary of variables selected for modeling
-#diabetes_binary_f, highbp_f, sex_f, income_f, age_f, bmi
-
- diabetes |>
-  group_by(highbp_f) |>
-  summarize(count = n()) |>
-  arrange(desc(count)) 
-
- diabetes |>
-  group_by(sex_f) |>
-  summarize(count = n()) |>
-  arrange(desc(count)) 
- 
-  diabetes |>
-  group_by(income_f) |>
-  summarize(count = n()) |>
-  arrange(desc(count)) 
-  
-  diabetes |>
-  group_by(age_f) |>
-  summarize(count = n())  |>
-  arrange(desc(count)) 
-  
-  mean(diabetes$bmi)
-
+ggplot(diabetes, aes(x = bmi, fill = diabetes_binary_f)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Frequency of BMI Values by Diabetes Status", x = "BMI", y = "Relative Frequency") +
+  theme(plot.title = element_text(hjust = 0.5), legend.position = "top", legend.box = "horizontal") +
+  scale_fill_discrete(guide = guide_legend(nrow=1))
 ```
 
+
+# Model Variable Selection
+
+The five predictor variables selected for the prediction modeling step are: blood pressure, sex, income, age, and BMI. 
+
+You can find the modeling results here!
 
 
