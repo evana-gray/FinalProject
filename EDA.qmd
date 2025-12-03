@@ -261,7 +261,7 @@ diabetes |>
   mutate("Col%" = round((count/253680)*100,2))
 ```
 
-Below is a visual demonstration of the difference in BMI distributions among those with diabetes and those without diabetes. It is clear BMI values do differ between those with and without diabetes in our dataset. 
+Below is a visual demonstration of the difference in BMI distributions among those with diabetes and those without diabetes. It is clear BMI values do differ between those with and without diabetes in our dataset and it is an informative numeric variable to consider.
 
 ```{r}
 ggplot(diabetes, aes(x = bmi, fill = diabetes_binary_f)) +
