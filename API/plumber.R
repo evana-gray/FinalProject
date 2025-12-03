@@ -149,8 +149,9 @@ rf_lastfit <- extract_workflow(rf3_final_fit)
 #* @param income_value
 #* @param age_value
 #* @param highbp_value
+#* @param bmi_value
 #* @get /predict
-function(sex_value = "female", income_value = "75k+", age_value = "60 to 64", highbp_value = "no high BP"){
+function(sex_value = "female", income_value = "75k+", age_value = "60 to 64", highbp_value = "no high BP", bmi_value = 28){
   
   #Per email/instructions - create tibble with same structure as original, but with avg / most common values
   #copy tibble, keep no rows but all columns, and repopulate original tibble to ensure structure is the same
@@ -160,33 +161,9 @@ function(sex_value = "female", income_value = "75k+", age_value = "60 to 64", hi
       sex_f = sex_value, 
       income_f = income_value, 
       age_f = age_value, 
-      bmi = 28
+      bmi = as.numeric(bmi_value)
     )
   
   prediction <- predict(rf_lastfit, new_data = diabetes_model_avg)
   print(prediction)
 }
-
-# #* Echo back the input
-# #* @param msg The message to echo
-# #* @get /echo
-# function(msg = "") {
-#     list(msg = paste0("The message is: '", msg, "'"))
-# }
-# 
-# #* Plot a histogram
-# #* @serializer png
-# #* @get /plot
-# function() {
-#     rand <- rnorm(100)
-#     hist(rand)
-# }
-# 
-# #* Return the sum of two numbers
-# #* @param a The first number to add
-# #* @param b The second number to add
-# #* @post /sum
-# function(a, b) {
-#     as.numeric(a) + as.numeric(b)
-# }
-
