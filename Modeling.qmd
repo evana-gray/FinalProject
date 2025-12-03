@@ -4,6 +4,7 @@ format: html
 editor: visual
 ---
 
+  This section of the project will focus on fitting statistical models to our dataset in hopes of being able to take in new information about an individual and predict if they have diabetes. A classification tree model and a random forest model, both of differing tuning parameters, will be compared to each other to determine which is more accurate. The initial steps will be the same as the EDA section - the data must be read in and factors will be created for our categorical variables. 
 
 ```{r}
 library(tidyverse)
@@ -18,8 +19,10 @@ library(ranger)
 library(yardstick)
 library(future)
 
+#set seed for repeatable results where randomization occurs. 
 set.seed(16)
 
+#this command allows for parallel computing and faster run times
 plan(multisession, workers = 14)
 ```
 
@@ -104,6 +107,8 @@ diabetes <- diabetes |>
 
 #Subset Variables of Interest
 
+First, we will include only the variables needed for training and testing. The full dataset is removed due to save memory. 
+
 ```{r}
 diabetes_model_data <- diabetes |>
   select(diabetes_binary_f, highbp_f, sex_f, income_f, age_f, bmi)
@@ -112,6 +117,7 @@ rm(diabetes) #remove large original file
 
 
 # Split Data And Fold
+
 ```{r}
 
 diabetes_split <- rsample::initial_split(diabetes_model_data, prop = .7)
@@ -123,6 +129,7 @@ diabetes_cv_folds <- vfold_cv(diabetes_train, 5)
 ```
 
 # Recipe
+
 ```{r}
 reci_1 <- recipe(diabetes_binary_f~ ., data = diabetes_train) |>
   step_normalize(all_numeric(), -diabetes_binary_f) |>
@@ -138,7 +145,8 @@ reci_1 |>
 ```
 
 # Classification Tree Models
- Changes to tuning parameter made to fit#_grid step
+
+
 ```{r}
 # Define models
 class_tree_mod <- decision_tree(tree_depth = tune(),
