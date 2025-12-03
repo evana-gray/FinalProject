@@ -5,6 +5,7 @@ editor: visual
 ---
 
   This section of the project will focus on fitting statistical models to our dataset in hopes of being able to take in new information about an individual and predict if they have diabetes. A classification tree model and a random forest model, both of differing tuning parameters, will be compared to each other to determine which is more accurate. The initial steps will be the same as the EDA section - the data must be read in and factors will be created for our categorical variables. 
+  
 
 ```{r}
 library(tidyverse)
@@ -130,6 +131,8 @@ diabetes_cv_folds <- vfold_cv(diabetes_train, 5)
 
 # Recipe
 
+The recipe step allows us to explicitly lay out data preparation steps such as normalizing or transforming data, creating dummy variables, and letting R know what data is an outcome variable. R stores the recipe in a way that it can be easily repeated as often as needed. 
+
 ```{r}
 reci_1 <- recipe(diabetes_binary_f~ ., data = diabetes_train) |>
   step_normalize(all_numeric(), -diabetes_binary_f) |>
@@ -146,6 +149,13 @@ reci_1 |>
 
 # Classification Tree Models
 
+  Classification tree models are a tree based model used to fit data with categorical outcomes or where more data modeling flexibility in modeling is useful. Relationships are not always linear, or resemble a function that quadratic terms could approximate, in these instances a tree model is needed that can use discrete prediction regions in its estimation. 
+  
+  Classification trees resemble a tree (upside-down usually) where the root is representative of all data. From there, recursive binary splitting is used to identify what variables are most predictive of an outcome and what values of that variable are most predictive at a given point. All possibilities are considered and the dataset is split into two branches at that point when loss-function results are minimized. This process is repeated at every branch until the algorithm is complete. 
+  
+  In this analysis we will use five fold cross-validation to tune our model hyperparameters such as the number of branches and cost complexity. In this process our existing dataset is split into several (k) separate datasets, or folds, and our model is trained on each fold and the error from each fold's fitting are measured. Note that the dataset that gets folded does not include any records that we will later use to test the model (the vfold_cv() function above is applied to the training split).
+  
+  The resulting tree can be read by a series of if-then questions, e.g. "is BMI < 27?", if yes move to one node, if no move to another node and the process is repeated until at the final branch a prediction is made - "no diabetes" or "diabetes". 
 
 ```{r}
 # Define models
@@ -230,15 +240,11 @@ rf1_diabetes <- rand_forest(mtry = 2, trees = 100) |>
   set_engine("ranger") |>
   set_mode("classification")
 
-rf2_diabetes <- rand_forest(mtry = 3, trees = 100) |>
+rf2_diabetes <- rand_forest(mtry = 4, trees = 100) |>
   set_engine("ranger") |>
   set_mode("classification")
 
 rf3_diabetes <- rand_forest(mtry = 5, trees = 100) |>
-  set_engine("ranger") |>
-  set_mode("classification")
-
-rf4_diabetes <- rand_forest(mtry = tune(), trees = 100) |>
   set_engine("ranger") |>
   set_mode("classification")
 
@@ -256,9 +262,6 @@ rf3_flow <- workflow() |>
   add_recipe(reci_1) |>
   add_model(rf3_diabetes)
 
-rf4_flow <- workflow() |>
-  add_recipe(reci_1) |>
-  add_model(rf4_diabetes)
 
 
 #fit RF to CV folds
@@ -274,10 +277,6 @@ rf2_fit <- rf2_flow |>
             )
 
 rf3_fit <- rf3_flow |>
-  tune_grid(resamples = diabetes_cv_folds,
-            metrics = metric_set(mn_log_loss)
-            )
-rf4_fit <- rf4_flow |>
   tune_grid(resamples = diabetes_cv_folds,
             metrics = metric_set(mn_log_loss)
             )
@@ -298,15 +297,10 @@ rf3_fits_parameters <- rf3_fit |>
   filter(.metric == "mn_log_loss") |>
   arrange(mean)
 
-rf4_fits_parameters <- rf4_fit |>
-  collect_metrics() |>
-  filter(.metric == "mn_log_loss") |>
-  arrange(mean)
 
  rf1_fits_parameters # mtry= 2
- rf2_fits_parameters # mtry = 3
+ rf2_fits_parameters # mtry = 4
  rf3_fits_parameters # mtry = 5 -- this is the model with the lowest mean log loss
- rf4_fits_parameters # mtry = tune() -- best model mtry = 6 does not out perform mtry = 5
 
  rf3_lowest_log <- select_best(rf3_fit)
  rf3_lowest_log
@@ -362,7 +356,7 @@ matrix <- conf_mat(
   diabetes_binary_f,
   estimate
     )
-
+matrix
 autoplot(matrix)
 
 ```
