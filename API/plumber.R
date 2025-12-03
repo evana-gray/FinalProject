@@ -154,7 +154,7 @@ rf_lastfit <- extract_workflow(rf3_final_fit)
 function(sex_value = "female", income_value = "75k+", age_value = "60 to 64", highbp_value = "no high BP", bmi_value = 28){
   
   #Per email/instructions - create tibble with same structure as original, but with avg / most common values
-  #copy tibble, keep no rows but all columns, and repopulate original tibble to ensure structure is the same
+  #copy tibble, keep no rows but all columns, and repopulate to ensure structure is the same
   diabetes_model_avg <- diabetes_model_data[0,] |> 
     add_row(
       highbp_f = highbp_value, 
