@@ -233,6 +233,10 @@ class_lowest_log
 ```
 
 # Random Forest Models
+
+  The Random Forest model is similar to the Classification Tree and can similarly handle classification and regression to make predictions but differs in some important methods. A random forest model uses bootstrapping or "bagging" in which the original training dataset is resampled **with replacement** many times. This means a single observation can appear in a bootstrapped sample multiple times. For each bootstrapped sample a tree model is fit. For each tree model, a random subset of variables are included and this helps ensure the model is not over fit to the training data as classification trees can often choose the same variables in the same order of split. As a result the trees are less similar to each other and there is a reduction in overall model variance. 
+  
+  Each tree model makes a different prediction and the overall prediction is determined by a "majority vote" (most common prediction) in classification scenarios, or a numeric average in regression scenarios. 
 ```{r}
 
 #define RF model
