@@ -192,10 +192,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#split-data-and-fold" id="toc-split-data-and-fold" class="nav-link active" data-scroll-target="#split-data-and-fold">Split Data And Fold</a></li>
+  <li><a href="#read-data" id="toc-read-data" class="nav-link active" data-scroll-target="#read-data">Read Data</a></li>
+  <li><a href="#create-factors" id="toc-create-factors" class="nav-link" data-scroll-target="#create-factors">Create Factors</a></li>
+  <li><a href="#subset-variables-of-interest" id="toc-subset-variables-of-interest" class="nav-link" data-scroll-target="#subset-variables-of-interest">Subset Variables of Interest</a></li>
+  <li><a href="#split-data-and-fold" id="toc-split-data-and-fold" class="nav-link" data-scroll-target="#split-data-and-fold">Split Data And Fold</a></li>
   <li><a href="#recipe" id="toc-recipe" class="nav-link" data-scroll-target="#recipe">Recipe</a></li>
   <li><a href="#classification-tree-models" id="toc-classification-tree-models" class="nav-link" data-scroll-target="#classification-tree-models">Classification Tree Models</a></li>
-  <li><a href="#random-forest-models" id="toc-random-forest-models" class="nav-link" data-scroll-target="#random-forest-models">Random Forest Models</a>
+  <li><a href="#random-forest-models" id="toc-random-forest-models" class="nav-link" data-scroll-target="#random-forest-models">Random Forest Models</a></li>
+  <li><a href="#best-models-on-full-split-dataset" id="toc-best-models-on-full-split-dataset" class="nav-link" data-scroll-target="#best-models-on-full-split-dataset">Best Models on Full Split Dataset</a>
   <ul class="collapse">
   <li><a href="#confusion-matrix" id="toc-confusion-matrix" class="nav-link" data-scroll-target="#confusion-matrix">Confusion Matrix</a></li>
   </ul></li>
@@ -371,7 +375,8 @@ The following object is masked from 'package:dials':
 <span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="co">#this command allows for parallel computing and faster run times</span></span>
 <span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="fu">plan</span>(multisession, <span class="at">workers =</span> <span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>#Read Data</p>
+<section id="read-data" class="level1">
+<h1>Read Data</h1>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>diabetes <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"diabetes_binary_health_indicators_BRFSS2015.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -386,7 +391,9 @@ dbl (22): Diabetes_binary, HighBP, HighChol, CholCheck, BMI, Smoker, Stroke,...
 <div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co">#convert col names to lower case for easy reference</span></span>
 <span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(diabetes) <span class="ot">&lt;-</span> <span class="fu">tolower</span>(<span class="fu">colnames</span>(diabetes))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>#Create Factors</p>
+</section>
+<section id="create-factors" class="level1">
+<h1>Create Factors</h1>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>diabetes <span class="ot">&lt;-</span> diabetes <span class="sc">|&gt;</span></span>
 <span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
@@ -456,15 +463,20 @@ dbl (22): Diabetes_binary, HighBP, HighChol, CholCheck, BMI, Smoker, Stroke,...
 <span id="cb45-66"><a href="#cb45-66" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"75k+"</span>))</span>
 <span id="cb45-67"><a href="#cb45-67" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>#Subset Variables of Interest</p>
+</section>
+<section id="subset-variables-of-interest" class="level1">
+<h1>Subset Variables of Interest</h1>
 <p>First, we will include only the variables needed for training and testing. The full dataset is removed due to save memory.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>diabetes_model_data <span class="ot">&lt;-</span> diabetes <span class="sc">|&gt;</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(diabetes_binary_f, highbp_f, sex_f, income_f, age_f, bmi)</span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(diabetes) <span class="co">#remove large original file</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
 <section id="split-data-and-fold" class="level1">
 <h1>Split Data And Fold</h1>
+<p>In this step we will split the original dataset such that 70% of records are placed in the training set and 30% of records go into the testing set. The testing set records will be introduced in our final model evaluations. For fitting purposes the training samples will be used.</p>
+<p>We will also create 5 cross validation folds using the training dataset.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>diabetes_split <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">initial_split</span>(diabetes_model_data, <span class="at">prop =</span> .<span class="dv">7</span>)</span>
 <span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>diabetes_train <span class="ot">&lt;-</span> rsample<span class="sc">::</span><span class="fu">training</span>(diabetes_split)</span>
@@ -780,7 +792,9 @@ will be used.</code></pre>
 1 pre0_mod0_post0</code></pre>
 </div>
 </div>
-<p>#BEST Models on Full Split Dataset</p>
+</section>
+<section id="best-models-on-full-split-dataset" class="level1">
+<h1>Best Models on Full Split Dataset</h1>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Classification Tree - model 3 levels = 5</span></span>
 <span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>class_tree_flow2 <span class="ot">&lt;-</span> class_tree_flow <span class="sc">|&gt;</span></span>
@@ -814,9 +828,10 @@ will be used.</code></pre>
 </div>
 </div>
 <p>#Overall Best Model</p>
-<p>The overall best model, with the lowest mn_log_loss is the random forest</p>
+<p>The overall best model, with the lowest mn_log_loss is the random forest with a mn_log_loss of 0.336.</p>
 <section id="confusion-matrix" class="level2">
 <h2 class="anchored" data-anchor-id="confusion-matrix">Confusion Matrix</h2>
+<p>This confusion matrix gives a visualization of correct and incorrect predictions made by the model against the actual, full, dataset. From the plot it is evident the model correctly predicted that the vast majority of subjects had “no-diabetes”. It was less successful in predicting “diabetes” among subjects who actually had diabetes.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a>rf_lastfit <span class="ot">&lt;-</span> <span class="fu">extract_workflow</span>(rf3_final_fit)</span>
 <span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a></span>
