@@ -29,7 +29,7 @@ plan(multisession, workers = 14)
 #Read Data
 
 ```{r}
-diabetes <- read_csv("../diabetes_binary_health_indicators_BRFSS2015.csv")
+diabetes <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
 
 #convert col names to lower case for easy reference
 colnames(diabetes) <- tolower(colnames(diabetes))

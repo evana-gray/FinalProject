@@ -3,21 +3,25 @@ project:
   output-dir: docs
   render: 
     - EDA.qmd
+    - Modeling.qmd
 
     
 website:
-  title: "Final Project: EDA"
+  title: "Final Project - ST558 - Evan Gray"
   navbar:
     background: primary
     left:
       - href: EDA.qmd
-        text: Home
+        text: EDA 1
+      - href: Modeling.qmd
+        text: Modeling 2
   sidebar:
     style: "docked"
     search: true
     collapse-level: 1
     contents:
       - EDA.qmd
+      - Modeling.qmd
 
   page-navigation: true
   reader-mode: true
