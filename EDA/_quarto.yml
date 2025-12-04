@@ -1,0 +1,36 @@
+project:
+  type: website
+  output-dir: docs
+  render: 
+    - EDA.qmd
+
+    
+website:
+  title: "Final Project: EDA"
+  navbar:
+    background: primary
+    left:
+      - href: EDA.qmd
+        text: Home
+  sidebar:
+    style: "docked"
+    search: true
+    collapse-level: 1
+    contents:
+      - EDA.qmd
+
+  page-navigation: true
+  reader-mode: true
+
+format:
+  html:
+    theme: flatly
+    css: styles.css
+    toc: true
+    grid:
+      sidebar-width: 300px
+
+callout-appearance: simple
+
+date: today
+date-format: iso
