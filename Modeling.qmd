@@ -26,7 +26,7 @@ set.seed(16)
 plan(multisession, workers = 14)
 ```
 
-#Read Data
+# Read Data
 
 ```{r}
 diabetes <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
@@ -35,7 +35,7 @@ diabetes <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
 colnames(diabetes) <- tolower(colnames(diabetes))
 ```
 
-#Create Factors
+# Create Factors
 
 ```{r}
 diabetes <- diabetes |>
@@ -107,7 +107,7 @@ diabetes <- diabetes |>
   )
 ```
 
-#Subset Variables of Interest
+# Subset Variables of Interest
 
 First, we will include only the variables needed for training and testing. The full dataset is removed due to save memory.
 
@@ -118,6 +118,10 @@ rm(diabetes) #remove large original file
 ```
 
 # Split Data And Fold
+
+In this step we will split the original dataset such that 70% of records are placed in the training set and 30% of records go into the testing set. The testing set records will be introduced in our final model evaluations. For fitting purposes the training samples will be used.
+
+We will also create 5 cross validation folds using the training dataset.
 
 ```{r}
 
@@ -316,7 +320,7 @@ rf3_fits_parameters <- rf3_fit |>
 
 ```
 
-#BEST Models on Full Split Dataset
+# Best Models on Full Split Dataset
 
 ```{r}
 #Classification Tree - model 3 levels = 5
@@ -343,9 +347,11 @@ collect_metrics(rf3_final_fit)
 
 #Overall Best Model
 
-The overall best model, with the lowest mn_log_loss is the random forest
+The overall best model, with the lowest mn_log_loss is the random forest with a mn_log_loss of 0.336.
 
 ## Confusion Matrix
+
+This confusion matrix gives a visualization of correct and incorrect predictions made by the model against the actual, full, dataset. From the plot it is evident the model correctly predicted that the vast majority of subjects had "no-diabetes". It was less successful in predicting "diabetes" among subjects who actually had diabetes.
 
 ```{r}
 
