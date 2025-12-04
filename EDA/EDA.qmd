@@ -4,9 +4,9 @@ format: html
 editor: visual
 ---
 
- Diabetes is an economically costly disease that can severely disrupt quality of life. The purpose of this project is to identify demographic and behavioral risk factors that could be used to predict diabetes. Such methods could inform clinical practice by alerting clinicians which patients could be at risk. This project's data was sourced from the CDC's 2015 Behavioral Risk Factor Surveillance System (BRFSS) and was accessed from www.kaggle.com. 
- 
- The first task will be to read in and explore the dataset. This includes looking for missing values and creating data tables and plots to investigate the relationship between variables. This will help to determine what data elements are potential risk factors that we should include in our prediction models. 
+Diabetes is an economically costly disease that can severely disrupt quality of life. The purpose of this project is to identify demographic and behavioral risk factors that could be used to predict diabetes. Such methods could inform clinical practice by alerting clinicians which patients could be at risk. This project's data was sourced from the CDC's 2015 Behavioral Risk Factor Surveillance System (BRFSS) and was accessed from www.kaggle.com.
+
+The first task will be to read in and explore the dataset. This includes looking for missing values and creating data tables and plots to investigate the relationship between variables. This will help to determine what data elements are potential risk factors that we should include in our prediction models.
 
 ```{r}
 library(tidyverse)
@@ -17,16 +17,18 @@ library(future)
 ```
 
 # Read Data
+
 ```{r}
-diabetes <- read_csv("diabetes_binary_health_indicators_BRFSS2015.csv")
+diabetes <- read_csv("../diabetes_binary_health_indicators_BRFSS2015.csv")
 
 #convert col names to lower case for easy reference
 colnames(diabetes) <- tolower(colnames(diabetes))
 ```
 
-We will assign factors to categorical variables for ease of interpretation. 
+We will assign factors to categorical variables for ease of interpretation.
 
 # Create Factors
+
 ```{r}
 diabetes <- diabetes |>
   mutate(
@@ -116,13 +118,12 @@ na_counts <- diabetes |>
 na_counts
 ```
 
-
-
 ## Exploring Variables of interest
 
-The first two variables of interest were income and age. One-way, two-way, and grouped bar plots were produced to gather more insight. The frequency distribution plot is immediately the most informative as it shows quickly which age groups and which income bands are the most prevalent in the data set. It is difficult to compare diabetes prevalence among income groups just looking at counts. More meaningful analyses will need to include a rate that can be easily compared across categories. 
+The first two variables of interest were income and age. One-way, two-way, and grouped bar plots were produced to gather more insight. The frequency distribution plot is immediately the most informative as it shows quickly which age groups and which income bands are the most prevalent in the data set. It is difficult to compare diabetes prevalence among income groups just looking at counts. More meaningful analyses will need to include a rate that can be easily compared across categories.
 
 ### Age and Income
+
 ```{r}
 
 #diabetes status by income 
@@ -148,9 +149,9 @@ ggplot(diabetes, aes(x = age_f , fill = income_f)) +
 
 ```
 
-### Diabetes prevalence 
+### Diabetes prevalence
 
-Here a rate of diabetes per 1,000 is calculated to allow for quick determination of what demographic and behavioral risk factors have the highest prevalance of diabetes in our dataset. Apparent in the summaries below is that diabetes is most prevalent in males, aged 70 - 74, with incomes between 0 and 15k, who do not consume alcohol heavily, with high blood pressure (BP). 
+Here a rate of diabetes per 1,000 is calculated to allow for quick determination of what demographic and behavioral risk factors have the highest prevalance of diabetes in our dataset. Apparent in the summaries below is that diabetes is most prevalent in males, aged 70 - 74, with incomes between 0 and 15k, who do not consume alcohol heavily, with high blood pressure (BP).
 
 ```{r}
 
@@ -192,9 +193,9 @@ diabetes |>
 
 
 ```
- 
- It seems counter-intuitive that heavy alcohol use is associated with lower diabetes prevalence so more investigation was done to see how high alcohol usage is distributed among other factors like age and income. The two bar charts below show that heavy alcohol use is more common among lower-aged but higher income groups. The previous analysis showed diabetes is more prevalent in older and lower income groups. Heavy alcohol use may not be a worthwhile variable to include in our predictive models. 
- 
+
+It seems counter-intuitive that heavy alcohol use is associated with lower diabetes prevalence so more investigation was done to see how high alcohol usage is distributed among other factors like age and income. The two bar charts below show that heavy alcohol use is more common among lower-aged but higher income groups. The previous analysis showed diabetes is more prevalent in older and lower income groups. Heavy alcohol use may not be a worthwhile variable to include in our predictive models.
+
 ```{r}
 #view proportion of heavy drinkers by income level, age, and sex
 alc_inc_df <- diabetes |>
@@ -219,9 +220,10 @@ ggplot(alc_age_df, aes(x = age_f , y = PrevalencePer1000, fill = sex_f)) +
 
 ```
 
-
 ### Mental Health
-Next we will investigate if the number of reported "poor mental health days" would be a worthwhile variable to include in the model. We can see that this variable is sparsely populated with values greater than 0 and the diabetes prevalence is not **much** greater among the group with non-zero poor mental health days. 
+
+Next we will investigate if the number of reported "poor mental health days" would be a worthwhile variable to include in the model. We can see that this variable is sparsely populated with values greater than 0 and the diabetes prevalence is not **much** greater among the group with non-zero poor mental health days.
+
 ```{r}
 #general numeric summary of the mental health numeric variable - range is 0-30 with many zero responses
 
@@ -240,9 +242,9 @@ diabetes |>
   mutate("Col%" = round((count/253680)*100,2))
 ```
 
-
 ### BMI
-Body-mass index (BMI) is another variable of interest. It has a much more "normal" looking distribution than mental health days and those with BMI values above the median BMI value of 27 have a significantly higher prevalence of diabetes. 
+
+Body-mass index (BMI) is another variable of interest. It has a much more "normal" looking distribution than mental health days and those with BMI values above the median BMI value of 27 have a significantly higher prevalence of diabetes.
 
 ```{r}
 
@@ -271,11 +273,8 @@ ggplot(diabetes, aes(x = bmi, fill = diabetes_binary_f)) +
   scale_fill_discrete(guide = guide_legend(nrow=1))
 ```
 
-
 # Model Variable Selection
 
-The five predictor variables selected for the prediction modeling step are: blood pressure, sex, income, age, and BMI. 
+The five predictor variables selected for the prediction modeling step are: blood pressure, sex, income, age, and BMI.
 
 You can find the modeling results here!
-
-
