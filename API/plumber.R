@@ -167,3 +167,34 @@ function(sex_value = "female", income_value = "75k+", age_value = "60 to 64", hi
   prediction <- predict(rf_lastfit, new_data = diabetes_model_avg)
   print(prediction)
 }
+
+#* Static info endpoint
+#* @post /info
+function(){
+  print("Evan Gray
+        https://evana-gray.github.io/FinalProject/")
+}
+
+
+#* Confusion Plot
+#* @serializer png
+#* @get /confusion
+function() {
+
+  predict_ds <- diabetes_model_data |>
+    mutate(
+      estimate = rf_lastfit |>
+        predict(diabetes_model_data) )
+  
+  matrix <- conf_mat(
+    diabetes_model_data |>
+      mutate(
+        estimate = rf_lastfit |>
+          predict(diabetes_model_data) |>
+          pull()),
+    diabetes_binary_f,
+    estimate
+  )
+  
+  print(autoplot(matrix))
+}
